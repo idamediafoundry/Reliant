@@ -8,17 +8,20 @@
 
 import Foundation
 
-class ContextCache {
-    static let sharedInstance:ContextCache = ContextCache()
-    var cache:Dictionary<String, Any> = Dictionary()
+struct ContextCache {
+    typealias ContextCacheType = Dictionary<String, Any>
+
+    // If we're only going to use a static cache, we might as well use a struct?
+    static var standard = ContextCacheType()
 }
 
 public func relyOn<T:ReliantContext>(type:T.Type) -> T.ContextType {
-    if let result = ContextCache.sharedInstance.cache[String(type)] {
+    if let result = ContextCache.standard[String(type)] {
+        // Forced downcast could be dangerous?
         return result as! T.ContextType
     } else {
         let result = type.createContext()
-        ContextCache.sharedInstance.cache[String(type)] = result
+        ContextCache.standard[String(type)] = result
         return result;
     }
 }

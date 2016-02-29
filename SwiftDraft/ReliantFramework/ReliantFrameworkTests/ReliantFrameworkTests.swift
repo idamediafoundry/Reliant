@@ -64,7 +64,7 @@ class ReliantFrameworkTests: XCTestCase {
     override func setUp() {
         super.setUp()
         ReliantFrameworkTestsHelper.sharedInsance.reset()
-        ContextCache.sharedInstance.cache = Dictionary()
+        ContextCache.standard.removeAll()
     }
     
     func testRelyOnReturnsSameInsanceEveryTimeForReferenceTypes() {

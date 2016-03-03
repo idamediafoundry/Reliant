@@ -12,8 +12,8 @@ import Reliant
 class SimpleReferenceContext : ReliantContext {
     private let bothWorlds = BothWorlds(prefix:"Hello")
     
-    let waver:Waver
-    let greeter:Greeter
+    var waver:Waver
+    var greeter:Greeter
     
     init() {
         ReliantFrameworkTestsHelper.sharedInsance.markInitCalled()

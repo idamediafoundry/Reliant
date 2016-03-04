@@ -14,7 +14,6 @@ public protocol ReliantContext {
     static func createContext() -> ContextType
 }
 
-
 public protocol ReliantContextHolder {
     typealias ContextType : ReliantContext
     var context:ContextType { get }

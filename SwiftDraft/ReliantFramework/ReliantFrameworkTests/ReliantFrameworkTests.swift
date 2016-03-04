@@ -54,17 +54,25 @@ struct ContextNeedingContext : ReliantContext {
         return ContextNeedingContext()
     }
 }
+class SubWaver : Waver {
+    func wave(reason: String) -> String {
+        return "Substitute waving"
+    }
+}
 
-
-
-
+class SubstituteContext : SimpleReferenceContext {
+    override init() {
+        super.init()
+        waver = SubWaver()
+    }
+}
 
 class ReliantFrameworkTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
         ReliantFrameworkTestsHelper.sharedInsance.reset()
-        ContextCache.sharedInstance.cache = Dictionary()
+        ContextCache.standard.removeAll()
     }
     
     func testRelyOnReturnsSameInsanceEveryTimeForReferenceTypes() {
@@ -84,6 +92,17 @@ class ReliantFrameworkTests: XCTestCase {
         XCTAssertEqual(needed.needy.decorateGreeting(), "Oh! Hello Needy")
     }
     
-    
+    func testSubstitutions() {
+        relyOnSubstitute(SimpleReferenceContext)(SubstituteContext)
+        XCTAssertTrue(ContextCache.substitutions.contains({ (key, value) -> Bool in
+            return key == String(SimpleReferenceContext) && value == SubstituteContext.self
+        }))
         
+        let context = relyOn(SimpleReferenceContext)
+                
+        // Failing test.
+        // The createContext() function is static and thus final. Actual context type seems
+        // to be correct, but createContext() is called on original context class
+        XCTAssertTrue(context is SubstituteContext)
+    }
 }

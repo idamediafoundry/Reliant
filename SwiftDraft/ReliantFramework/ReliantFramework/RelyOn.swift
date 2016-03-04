@@ -8,17 +8,31 @@
 
 import Foundation
 
-class ContextCache {
-    static let sharedInstance:ContextCache = ContextCache()
-    var cache:Dictionary<String, Any> = Dictionary()
+struct ContextCache {
+    // If we're only going to use a static cache, we might as well use a struct?
+    static var standard = [String:Any]()
+    
+    static var substitutions = [String:Any.Type]()
 }
 
 public func relyOn<T:ReliantContext>(type:T.Type) -> T.ContextType {
-    if let result = ContextCache.sharedInstance.cache[String(type)] {
+    let typeKey = String(type)
+    if let result = ContextCache.standard[typeKey] {
         return result as! T.ContextType
     } else {
-        let result = type.createContext()
-        ContextCache.sharedInstance.cache[String(type)] = result
+        var result:T.ContextType
+        
+        if let substitutionType = ContextCache.substitutions[typeKey] as? T.Type {
+            result = substitutionType.createContext()
+        } else {
+            result = type.createContext()
+        }
+        
+        ContextCache.standard[String(type)] = result
         return result;
     }
+}
+
+public func relyOnSubstitute<T:ReliantContext>(type:T.Type)(_ otherType:T.Type) {
+    ContextCache.substitutions[String(type)] = otherType
 }

@@ -7,7 +7,9 @@
 #import "NSObject+OCSReliantContextBinding.h"
 #import "OCSObjectContext.h"
 
-@implementation OCSBoundContextLocatorOnViewControllerHierarchy
+@implementation OCSBoundContextLocatorOnViewControllerHierarchy {
+
+}
 
 - (id <OCSObjectContext>)locateBoundContextForObject:(NSObject *)object {
     id<OCSObjectContext> context = nil;

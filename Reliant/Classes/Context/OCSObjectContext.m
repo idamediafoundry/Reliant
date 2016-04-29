@@ -49,9 +49,7 @@ Recursive method for injecting objects with their dependencies. This method iter
 
 @end
 
-@implementation OCSObjectContext {
-    __weak NSObject *_boundObject;
-}
+@implementation OCSObjectContext
 
 @synthesize parentContext = _parentContext;
 
@@ -65,19 +63,14 @@ Recursive method for injecting objects with their dependencies. This method iter
     return [self initWithConfigurator:configurator scopeFactory:defaultScopeFactory contextRegistry:[OCSDefaultContextRegistry sharedDefaultContextRegistry]];
 }
 
-- (instancetype)initWithConfigurator:(id <OCSConfigurator>)configurator scopeFactory:(id <OCSScopeFactory>)scopeFactory contextRegistry:(id<OCSContextRegistry>) contextRegistry  {
-    return [self initWithConfigurator:configurator scopeFactory:scopeFactory contextRegistry:contextRegistry boundObject:nil];
-}
-
-- (instancetype)initWithConfigurator:(id <OCSConfigurator>)configurator scopeFactory:(id <OCSScopeFactory>)scopeFactory contextRegistry:(id<OCSContextRegistry>) contextRegistry boundObject:(NSObject*)boundObject  {
+- (instancetype)initWithConfigurator:(id <OCSConfigurator>)configurator scopeFactory:(id <OCSScopeFactory>)scopeFactory contextRegistry:(id<OCSContextRegistry>) contextRegistry {
     if (self && configurator && scopeFactory && contextRegistry) {
         self = [super init];
         _configurator = configurator;
         _scopeFactory = scopeFactory;
         _contextRegistry = contextRegistry;
         [_configurator.objectFactory bindToContext:self];
-        _boundObject = boundObject;
-        [_contextRegistry registerContext:self toBoundObject:boundObject];
+        [_contextRegistry registerContext:self];
         [self _setParentContextIfPossible];
         _objectsUnderConstruction = [NSMutableDictionary dictionary];
         [self performInjectionOn:_configurator.objectFactory];
@@ -90,7 +83,7 @@ Recursive method for injecting objects with their dependencies. This method iter
 - (void)_setParentContextIfPossible {
     NSString *parentContextName = _configurator.parentContextName;
     if (parentContextName) {
-        id <OCSObjectContext> parentContext = [_contextRegistry contextForName:parentContextName fromBoundObject:_boundObject];
+        id <OCSObjectContext> parentContext = [_contextRegistry contextForName:parentContextName];
         if (!parentContext) {
             [NSException raise:@"ParentNotFoundException" format:@"The configured parent (%@) could not be found. Make sure you configured the name correctly (both on the parent and this context's configuration) and that the parent context is created before this context is.", parentContextName];
         }
